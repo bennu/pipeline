@@ -47,10 +47,17 @@ func (e *engine) Setup(conf *backend.Config) error {
 			return err
 		}
 	}
+
+	ipam := &network.IPAM{
+		Driver: "default",
+		Config: []network.IPAMConfig{{Subnet: "10.15.0.0/16"}},
+	}
+
 	for _, network := range conf.Networks {
 		_, err := e.client.NetworkCreate(noContext, network.Name, types.NetworkCreate{
 			Driver:  network.Driver,
 			Options: network.DriverOpts,
+			IPAM: ipam,
 			// Labels:  defaultLabels,
 		})
 		if err != nil {
