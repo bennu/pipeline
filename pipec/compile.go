@@ -355,6 +355,11 @@ func compileAction(c *cli.Context) (err error) {
 			Value: parts[1],
 		})
 	}
+	// supported cachers
+	var cachers = map[string]compiler.Cacher{
+		"volume": &compiler.VolumeCacher{c.String("volume-cache-base")},
+		"s3":    &compiler.S3Cacher{c.String("volume-cache-base")},
+	}
 
 	// compiles the yaml file
 	compiled := compiler.New(
@@ -397,21 +402,7 @@ func compileAction(c *cli.Context) (err error) {
 		compiler.WithMetadata(
 			metadataFromContext(c),
 		),
-		compiler.WithOption(
-			compiler.WithVolumeCacher(
-				c.String("volume-cache-base"),
-			),
-			c.Bool("volume-cache"),
-		),
-		compiler.WithOption(
-			compiler.WithS3Cacher(
-				c.String("aws-access-key-id"),
-				c.String("aws-secret-access-key"),
-				c.String("aws-region"),
-				c.String("aws-bucket"),
-			),
-			c.Bool("aws-cache"),
-		),
+		compiler.WithCachers(cachers),
 	).Compile(conf)
 
 	// marshal the compiled spec to formatted yaml

@@ -1,0 +1,14 @@
+cache:
+  type: local
+  mount:
+    - node_modules
+    - .m2
+  secrets: [ cache_s3_access_key, cache_s3_key ]
+
+pipeline:
+  build:
+    image: node
+    commands:
+      - npm install
+      - npm test
+
